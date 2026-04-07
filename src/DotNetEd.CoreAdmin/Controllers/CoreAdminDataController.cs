@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -36,6 +37,12 @@ namespace DotNetEd.CoreAdmin.Controllers
                     {
                         viewModel.EntityType = dbSetProperty.PropertyType.GetGenericArguments().First();
                         viewModel.DbSetProperty = dbSetProperty;
+
+                        if (Attribute.IsDefined(viewModel.EntityType, typeof(DisplayAttribute)))
+                        {
+                            viewModel.DbDisplayName = viewModel.EntityType.GetCustomAttribute<DisplayAttribute>().Name;
+                        }
+                            
 
                         var dbContextObject = (DbContext)this.HttpContext.RequestServices.GetRequiredService(dbSetEntity.DbContextType);
                         var query = dbContextObject.Set(viewModel.EntityType);
