@@ -10,7 +10,7 @@
 @inject IStringLocalizer<JsonLocalizer> _localizer
 
 @{
-    ViewData["Page_Title"] = Model.DbSetProperty.Name;
+    ViewData["Page_Title"] = Model.DbDisplayName;
     Layout = "_CoreAdminLayout";
 
     var options = CoreAdminOptions.FirstOrDefault();
@@ -23,7 +23,6 @@
         @Html.ActionLink(_localizer["CreateNew"], "Create", new { id = Model.DbSetProperty.Name }, new { @class = "btn btn-primary"})
     </div>
 </div>
-
 @(
 Html
     .Grid(Model.Data)

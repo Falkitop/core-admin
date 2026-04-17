@@ -1,4 +1,7 @@
 ﻿using DotNetEd.CoreAdmin.ViewModels;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +30,27 @@ namespace DotNetEd.CoreAdmin.Controllers
         [HttpGet]
         public IActionResult Index(string id)
         {
+            //Quick hack to get what I want
+            //Cookies for saving preference
+
+            //https://positiwise.com/blog/how-to-use-cookies-in-asp-net-core
+            var cookiePrefs = Request.Cookies["prefs"];
+            var curPrefs = Request.QueryString.ToString();
+
+            if (string.IsNullOrEmpty(curPrefs) && !string.IsNullOrEmpty(cookiePrefs))
+            {
+                return Redirect(Request.Path + cookiePrefs); // cookiePrefs already includes "?"
+            }
+
+            if (curPrefs != cookiePrefs)
+            {
+                Response.Cookies.Append("prefs", curPrefs, new CookieOptions
+                {
+                    Expires = DateTimeOffset.UtcNow.AddDays(30)
+                });
+            }
+
+
             var viewModel = new DataListViewModel();
 
             foreach (var dbSetEntity in dbSetEntities.Where(db => db.Name.ToLowerInvariant() == id.ToLowerInvariant()))
